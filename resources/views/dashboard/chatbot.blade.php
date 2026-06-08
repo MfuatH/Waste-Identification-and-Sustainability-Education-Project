@@ -13,7 +13,7 @@
         <div>
 
             <h2 class="font-black text-xl">
-                SmartWaste AI Assistant
+                WISE AI Assistant
             </h2>
 
             <p class="text-sm text-slate-500">

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>SmartWaste AI Login</title>
+<title>WISE Login</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
@@ -47,11 +47,11 @@ class="min-h-screen bg-gradient-to-br from-lime-50 via-white to-green-100">
 </div>
 
 <h1 class="text-6xl font-black text-lime-600">
-SmartWaste AI
+WISE
 </h1>
 
 <h2 class="text-4xl font-black mt-8 text-slate-800">
-Smart Waste Classification
+Waste Identification and Sustainability Education
 </h2>
 
 <p class="mt-6 text-xl text-slate-500 max-w-xl leading-relaxed">
@@ -91,7 +91,7 @@ learn recycling methods and contribute to a cleaner environment.
 
 <div class="flex items-center justify-center">
 
-<div class="bg-white shadow-2xl rounded-[40px] p-10 w-full max-w-md">
+<div class="bg-white shadow-2xl rounded-[40px] p-10 w-full max-w-md animate-card-enter">
 
 <h2 class="text-4xl font-black text-center">
 Welcome Back

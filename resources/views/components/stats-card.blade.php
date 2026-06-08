@@ -5,7 +5,7 @@
 'color' => 'lime'
 ])
 
-<div class="bg-white rounded-3xl p-6 border shadow-sm">
+<div class="bg-white rounded-3xl p-6 border shadow-sm animate-card-enter">
 
     <div class="flex justify-between">
 

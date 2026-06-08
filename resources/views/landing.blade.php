@@ -15,11 +15,11 @@
 
                 <div>
                     <h1 class="font-black text-xl text-lime-600">
-                        SmartWaste AI
+                        WISE
                     </h1>
 
                     <p class="text-xs text-slate-500">
-                        Smart Waste Classification
+                        Waste Identification and Sustainability Education
                     </p>
                 </div>
 
@@ -34,19 +34,37 @@
 
             </div>
 
-            <div class="flex gap-3">
+            <div class="flex gap-3 items-center">
 
                 <a href="{{ route('login') }}"
-                   class="px-5 py-3 rounded-xl border font-bold">
+                   class="hidden md:inline-flex px-5 py-3 rounded-xl border font-bold">
                     Login
                 </a>
 
                 <a href="{{ route('login') }}"
-                   class="px-5 py-3 rounded-xl bg-lime-500 text-white font-bold">
+                   class="hidden md:inline-flex px-5 py-3 rounded-xl bg-lime-500 text-white font-bold">
                     Get Started
                 </a>
 
+                <button id="mobileMenuToggle" class="md:hidden p-3 rounded-2xl bg-slate-100 text-slate-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+
             </div>
+        </div>
+
+        <div id="mobileMenu" class="md:hidden hidden bg-white border-b border-slate-200">
+            <div class="px-6 pb-4 pt-4 space-y-3 font-bold text-slate-700">
+                <a href="#features" class="block">Features</a>
+                <a href="#how" class="block">How It Works</a>
+                <a href="#education" class="block">Education</a>
+                <a href="#ai" class="block">AI Assistant</a>
+                <a href="{{ route('login') }}" class="block rounded-2xl border px-4 py-3">Login</a>
+                <a href="{{ route('login') }}" class="block rounded-2xl bg-lime-500 text-white px-4 py-3">Get Started</a>
+            </div>
+        </div>
 
         </div>
 
@@ -66,9 +84,9 @@
                 </div>
 
                 <h1 class="text-6xl font-black text-slate-900 leading-tight">
-                    Smart Waste
-                    Classification
-                    Using AI
+                    WISE
+                    Intelligence
+                    for Waste
                 </h1>
 
                 <p class="text-xl text-slate-500 mt-8 leading-relaxed">
@@ -227,8 +245,7 @@ Smart Waste AI Classification
 </h2>
 
 <p class="mt-6 text-slate-400">
-OLIVIA 2026 Project
-</p>
+        WISE — Waste Identification and Sustainability Education
 
 </div>
 
