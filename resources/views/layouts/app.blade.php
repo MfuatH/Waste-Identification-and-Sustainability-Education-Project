@@ -52,7 +52,7 @@
         <!-- Sidebar -->
         <div
             id="mobileSidebar"
-            class="fixed inset-y-0 left-0 z-50 w-full max-w-xs transform -translate-x-full transition-transform duration-300 ease-in-out lg:static lg:translate-x-0 lg:block lg:w-72 lg:flex-none"
+            class="fixed inset-y-0 left-0 z-50 w-full max-w-xs transform -translate-x-full transition-transform duration-300 ease-in-out"
         >
             <x-sidebar />
         </div>
@@ -60,7 +60,7 @@
         <!-- Backdrop -->
         <div
             id="sidebarBackdrop"
-            class="fixed inset-0 bg-slate-900/40 opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out lg:hidden"
+            class="fixed inset-0 bg-slate-900/40 opacity-0 pointer-events-none transition-opacity duration-300 ease-in-out z-40"
         ></div>
 
         <!-- Main Content -->
@@ -82,6 +82,8 @@
 </div>
 
 @stack('scripts')
+
+
 
 </body>
 </html>
