@@ -149,6 +149,30 @@
                 </div>
 
                 <div class="bg-lime-50 p-6 rounded-2xl">
+                    <div
+    id="youtubeSection"
+    class="bg-red-50 p-6 rounded-2xl hidden">
+
+    <h4 class="font-black text-lg">
+        Tutorial Pengolahan Sampah
+    </h4>
+
+    <p
+        id="youtubeTitle"
+        class="mt-2 text-slate-700">
+    </p>
+
+    <a
+        id="youtubeLink"
+        href="#"
+        target="_blank"
+        class="inline-block mt-4 px-5 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition">
+
+        🎥 Tonton Tutorial di YouTube
+
+    </a>
+
+</div>
 
                     <h4 class="font-black text-lg">
                         Recycling Recommendation
@@ -196,6 +220,39 @@ let currentRecommendations = [
     'Start a scan or upload an image first.'
 ];
 
+const youtubeVideos = {
+    "Plastic Waste": {
+        title: "Cara Mengolah Sampah Plastik Menjadi Produk Bernilai",
+        url: "https://youtu.be/sbYlSF3nBPk?si=vBxfgz8660yNbCNG"
+    },
+
+    "Organic Waste": {
+        title: "Tutorial Membuat Kompos dari Sampah Organik",
+        url: "https://youtu.be/0qfGNQ499JA?si=t3Epxd-PAPQK6duC"
+    },
+
+    "Paper Waste": {
+        title: "Daur Ulang Kertas Bekas Menjadi Produk Baru",
+        url: "https://youtu.be/oVOgpI_V8OY?si=ptppcvAtgp1ir4lY"
+    },
+
+    "Glass Waste": {
+        title: "Pemanfaatan Botol Kaca Bekas",
+        url: "https://youtu.be/CBEckOhAIGw?si=jxiEyJEDmy15jV5R"
+    },
+
+    "Metal Waste": {
+        title: "Cara Mengelola Sampah Logam",
+        url: "https://youtu.be/jfH9aqHRMks?si=i1CfmpZ9vH6oI0oq"
+    },
+
+    "Electronic Waste": {
+        title: "Pengelolaan Limbah Elektronik yang Benar",
+        url: "https://youtube.com/playlist?list=PLHWBteJlBKUqp-qxOU_eOvFg7qILUjGbm&si=5E9k5LsarX2L2Han"
+    }
+};
+
+
 function showPreview(imageSrc) {
     preview.src = imageSrc;
     preview.classList.remove('hidden');
@@ -205,12 +262,54 @@ function showPreview(imageSrc) {
     saveScanBtn.classList.remove('hidden');
 }
 
+function updateYoutubeTutorial(category) {
+
+    const youtubeSection =
+        document.getElementById('youtubeSection');
+
+    const youtubeTitle =
+        document.getElementById('youtubeTitle');
+
+    const youtubeLink =
+        document.getElementById('youtubeLink');
+
+    if (youtubeVideos[category]) {
+
+        youtubeTitle.textContent =
+            youtubeVideos[category].title;
+
+        youtubeLink.href =
+            youtubeVideos[category].url;
+
+        youtubeSection.classList.remove('hidden');
+
+    } else {
+
+        youtubeSection.classList.add('hidden');
+
+    }
+}
+
 function updateResult(category, confidence, recommendationsText) {
+
     resultCategory.textContent = category;
-    confidenceBar.style.width = `${confidence}%`;
-    confidenceValue.textContent = `${confidence}%`;
-    currentRecommendations = recommendationsText;
-    recommendations.innerHTML = recommendationsText.map(item => `<li>• ${item}</li>`).join('');
+
+    confidenceBar.style.width =
+        `${confidence}%`;
+
+    confidenceValue.textContent =
+        `${confidence}%`;
+
+    currentRecommendations =
+        recommendationsText;
+
+    recommendations.innerHTML =
+        recommendationsText
+            .map(item => `<li>• ${item}</li>`)
+            .join('');
+
+    updateYoutubeTutorial(category);
+
     saveScanBtn.classList.remove('hidden');
 }
 
