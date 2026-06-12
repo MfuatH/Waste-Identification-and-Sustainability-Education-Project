@@ -101,25 +101,27 @@
             </thead>
 
             <tbody>
+                @forelse($recentActivities as $activity)
+                    <tr class="border-b">
+                        <td class="py-4">
+                            {{ $activity->created_at->format('d M Y H:i') }}
+                        </td>
 
-                <tr class="border-b">
-                    <td class="py-4">09:12</td>
-                    <td>Plastic Bottle</td>
-                    <td>96.7%</td>
-                </tr>
+                        <td>
+                            {{ $activity->category }}
+                        </td>
 
-                <tr class="border-b">
-                    <td class="py-4">10:22</td>
-                    <td>Banana Peel</td>
-                    <td>98.3%</td>
-                </tr>
-
-                <tr>
-                    <td class="py-4">11:54</td>
-                    <td>Electronic Waste</td>
-                    <td>94.1%</td>
-                </tr>
-
+                        <td>
+                            {{ number_format($activity->confidence, 1) }}%
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="3" class="py-6 text-center text-slate-500">
+                            No scan history available yet.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
 
         </table>
