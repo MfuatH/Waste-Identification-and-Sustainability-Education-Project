@@ -62,16 +62,16 @@
 
         <x-chart-card title="Classification Trend">
 
-            <div class="h-72 flex items-center justify-center text-slate-400">
-                Chart.js Line Chart Here
+            <div class="h-72">
+                <canvas id="trendChart"></canvas>
             </div>
 
         </x-chart-card>
 
         <x-chart-card title="Waste Distribution">
 
-            <div class="h-72 flex items-center justify-center text-slate-400">
-                Pie Chart Here
+            <div class="h-72">
+                <canvas id="distributionChart"></canvas>
             </div>
 
         </x-chart-card>
@@ -127,5 +127,55 @@
     </div>
 
 </div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: @json($trendLabels),
+            datasets: [{
+                label: 'Scans per Day',
+                data: @json($trendValues),
+                borderColor: '#65a30d',
+                backgroundColor: 'rgba(101, 163, 13, 0.15)',
+                tension: 0.3,
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 1200,
+                easing: 'easeOutBack',
+            },
+            scales: {
+                y: { beginAtZero: true, ticks: { precision: 0 } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('distributionChart'), {
+        type: 'pie',
+        data: {
+            labels: ['Plastic Waste', 'Organic Waste', 'E-Waste'],
+            datasets: [{
+                data: [{{ $plastic }}, {{ $organic }}, {{ $ewaste }}],
+                backgroundColor: ['#3b82f6', '#22c55e', '#f59e0b'],
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 1200,
+                easing: 'easeOutBack',
+            },
+        }
+    });
+</script>
+@endpush
 
 @endsection
