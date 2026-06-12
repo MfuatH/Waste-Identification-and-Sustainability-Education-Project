@@ -9,12 +9,12 @@
 <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
 
     @foreach([
-        ['🍃','Organic Waste'],
-        ['🧴','Plastic Waste'],
-        ['🍾','Glass Waste'],
-        ['🥫','Metal Waste'],
-        ['💻','Electronic Waste'],
-        ['♻️','General Recycling']
+        ['🍃','Organic Waste','https://en.wikipedia.org/wiki/Organic_waste'],
+        ['🧴','Plastic Waste','https://en.wikipedia.org/wiki/Plastic_recycling'],
+        ['🍾','Glass Waste','https://en.wikipedia.org/wiki/Glass_recycling'],
+        ['🥫','Metal Waste','https://en.wikipedia.org/wiki/Metal_recycling'],
+        ['💻','Electronic Waste','https://en.wikipedia.org/wiki/Electronic_waste'],
+        ['♻️','General Recycling','https://en.wikipedia.org/wiki/Recycling']
     ] as $item)
 
     <div class="bg-white border rounded-3xl p-8 hover:shadow-xl transition">
@@ -31,12 +31,14 @@
             Learn proper handling and recycling methods.
         </p>
 
-        <button
-            class="mt-6 bg-lime-500 text-white px-6 py-3 rounded-xl">
+        <a
+            href="{{ $item[2] }}"
+            target="_blank"
+            class="inline-block mt-6 bg-lime-500 text-white px-6 py-3 rounded-xl">
 
             Learn More
 
-        </button>
+        </a>
 
     </div>
 
