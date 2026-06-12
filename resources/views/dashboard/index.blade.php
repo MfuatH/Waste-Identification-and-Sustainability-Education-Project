@@ -13,7 +13,7 @@
             <div>
 
                 <h1 class="text-4xl font-black">
-                    Welcome Back, {{ Auth::user()->name ?? 'User' }} 👋
+                    Welcome Back, {{ Auth::user()->name ?? 'User' }}!
                 </h1>
 
                 <p class="mt-4 text-lg opacity-90">
