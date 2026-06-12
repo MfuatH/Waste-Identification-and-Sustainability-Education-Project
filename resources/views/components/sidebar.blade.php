@@ -58,6 +58,17 @@
                 <span class="font-semibold">AI Scanner</span>
             </a>
 
+            <a href="{{ route('scanner.history') }}"
+               class="flex items-center gap-3 p-3 rounded-xl hover:bg-lime-50 hover:text-lime-600 transition-colors duration-200">
+
+                <span class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19h16M4 12h16M4 5h16" />
+                    </svg>
+                </span>
+                <span class="font-semibold">History Scan</span>
+            </a>
+
             <a href="{{ route('education') }}"
                class="flex items-center gap-3 p-3 rounded-xl hover:bg-lime-50 hover:text-lime-600 transition-colors duration-200">
 

@@ -52,6 +52,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
 
+    Route::post('/scanner/upload', [ScannerController::class, 'store'])
+        ->name('scanner.upload');
+
     Route::get('/scanner', [ScannerController::class, 'index'])
         ->name('scanner');
 

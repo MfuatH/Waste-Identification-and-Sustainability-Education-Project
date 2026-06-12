@@ -4,6 +4,12 @@
 
 <div class="space-y-8">
 
+    @if(session('success'))
+        <div class="rounded-3xl border border-lime-200 bg-lime-50 p-4 text-lime-800">
+            {{ session('success') }}
+        </div>
+    @endif
+
     <div>
 
         <h1 class="text-4xl font-black">
@@ -80,9 +86,20 @@
 
                 </div>
 
-                <p id="cameraHint" class="text-sm text-slate-500">
-                    Allow camera access to scan waste in real time.
-                </p>
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mt-4">
+                    <p id="cameraHint" class="text-sm text-slate-500">
+                        Allow camera access to scan waste in real time.
+                    </p>
+
+                    <button
+                        id="saveScanBtn"
+                        type="button"
+                        class="px-6 py-3 rounded-2xl bg-emerald-500 text-white font-bold shadow-sm hover:bg-emerald-600 transition hidden">
+                        Simpan Scan
+                    </button>
+                </div>
+
+                <p id="saveStatus" class="text-sm text-slate-500 mt-2 hidden"></p>
 
             </div>
 
@@ -166,12 +183,43 @@ const captureBtn = document.getElementById('captureBtn');
 const stopCameraBtn = document.getElementById('stopCamera');
 const imageInput = document.getElementById('imageInput');
 const cameraHint = document.getElementById('cameraHint');
+const saveScanBtn = document.getElementById('saveScanBtn');
+const saveStatus = document.getElementById('saveStatus');
 const resultCategory = document.getElementById('resultCategory');
 const confidenceBar = document.getElementById('confidenceBar');
 const confidenceValue = document.getElementById('confidenceValue');
 const recommendations = document.getElementById('recommendations');
 
 let cameraStream = null;
+let currentImageFile = null;
+let currentRecommendations = [
+    'Start a scan or upload an image first.'
+];
+
+function showPreview(imageSrc) {
+    preview.src = imageSrc;
+    preview.classList.remove('hidden');
+    cameraVideo.classList.add('hidden');
+    cameraFallback.classList.add('hidden');
+    cameraHint.textContent = 'Image ready for classification.';
+    saveScanBtn.classList.remove('hidden');
+}
+
+function updateResult(category, confidence, recommendationsText) {
+    resultCategory.textContent = category;
+    confidenceBar.style.width = `${confidence}%`;
+    confidenceValue.textContent = `${confidence}%`;
+    currentRecommendations = recommendationsText;
+    recommendations.innerHTML = recommendationsText.map(item => `<li>• ${item}</li>`).join('');
+    saveScanBtn.classList.remove('hidden');
+}
+
+function setStatus(message, isError = false) {
+    saveStatus.textContent = message;
+    saveStatus.classList.remove('text-slate-500', 'text-green-600', 'text-red-600');
+    saveStatus.classList.add(isError ? 'text-red-600' : 'text-green-600');
+    saveStatus.classList.remove('hidden');
+}
 
 async function startCamera() {
     try {
@@ -207,19 +255,54 @@ function stopCamera() {
     stopCameraBtn.classList.add('hidden');
 }
 
-function showPreview(imageSrc) {
-    preview.src = imageSrc;
-    preview.classList.remove('hidden');
-    cameraVideo.classList.add('hidden');
-    cameraFallback.classList.add('hidden');
-    cameraHint.textContent = 'Image ready for classification.';
-}
+async function saveScan() {
+    if (!currentImageFile) {
+        setStatus('Pilih gambar atau ambil foto dulu sebelum menyimpan.', true);
+        return;
+    }
 
-function updateResult(category, confidence, recommendationsText) {
-    resultCategory.textContent = category;
-    confidenceBar.style.width = `${confidence}%`;
-    confidenceValue.textContent = `${confidence}%`;
-    recommendations.innerHTML = recommendationsText.map(item => `<li>• ${item}</li>`).join('');
+    const category = resultCategory.textContent.trim();
+    const confidence = parseFloat(confidenceValue.textContent.replace('%', '')) || 0;
+    const recommendationText = currentRecommendations.join('\n');
+
+    const formData = new FormData();
+    formData.append('image', currentImageFile);
+    formData.append('category', category);
+    formData.append('confidence', confidence);
+    formData.append('recommendation', recommendationText);
+
+    saveScanBtn.disabled = true;
+    saveScanBtn.textContent = 'Menyimpan...';
+
+    try {
+        const response = await fetch("{{ route('scanner.upload') }}", {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            },
+            body: formData,
+        });
+
+        const contentType = response.headers.get('content-type') || '';
+        const result = contentType.includes('application/json')
+            ? await response.json()
+            : { success: false, message: 'Server merespon dengan tipe yang tidak diharapkan.' };
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || 'Terjadi kesalahan saat menyimpan scan.');
+        }
+
+        setStatus('Scan berhasil disimpan ke database.');
+        currentImageFile = null;
+        saveScanBtn.textContent = 'Simpan Scan';
+        saveScanBtn.disabled = false;
+    } catch (error) {
+        setStatus(error.message, true);
+        saveScanBtn.textContent = 'Simpan Scan';
+        saveScanBtn.disabled = false;
+        console.error(error);
+    }
 }
 
 startCameraBtn?.addEventListener('click', startCamera);
@@ -239,20 +322,30 @@ captureBtn?.addEventListener('click', () => {
     const ctx = canvas.getContext('2d');
     ctx.drawImage(cameraVideo, 0, 0, width, height);
 
-    const imageData = canvas.toDataURL('image/jpeg');
-    showPreview(imageData);
-    stopCamera();
+    canvas.toBlob(blob => {
+        if (!blob) {
+            setStatus('Tidak dapat menangkap gambar.', true);
+            return;
+        }
 
-    updateResult('Plastic Waste', 96, [
-        'Clean bottle before recycling.',
-        'Remove caps and rinse lightly.',
-        'Place in designated plastic bin.'
-    ]);
+        currentImageFile = new File([blob], 'scan.jpg', { type: 'image/jpeg' });
+        showPreview(URL.createObjectURL(blob));
+
+        updateResult('Plastic Waste', 96, [
+            'Clean bottle before recycling.',
+            'Remove caps and rinse lightly.',
+            'Place in designated plastic bin.'
+        ]);
+    }, 'image/jpeg');
+
+    stopCamera();
 });
 
 imageInput?.addEventListener('change', function (event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    currentImageFile = file;
 
     const reader = new FileReader();
     reader.onload = function (e) {
@@ -266,6 +359,8 @@ imageInput?.addEventListener('change', function (event) {
     };
     reader.readAsDataURL(file);
 });
+
+saveScanBtn?.addEventListener('click', saveScan);
 </script>
 
 @endsection

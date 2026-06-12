@@ -36,22 +36,22 @@
 
         <x-stats-card
             title="Total Scans"
-            value="1,245"
+            value="{{ number_format($totalScans) }}"
             icon="📸"/>
 
         <x-stats-card
             title="Plastic Waste"
-            value="486"
+            value="{{ number_format($plastic) }}"
             icon="🧴"/>
 
         <x-stats-card
             title="Organic Waste"
-            value="398"
+            value="{{ number_format($organic) }}"
             icon="🍃"/>
 
         <x-stats-card
             title="E-Waste"
-            value="112"
+            value="{{ number_format($ewaste) }}"
             icon="💻"/>
 
     </div>
