@@ -1,6 +1,6 @@
 <aside class="w-full max-w-xs lg:w-72 lg:flex-none bg-white border-r border-slate-200 min-h-screen lg:sticky top-0 shadow-sm">
 
-    <div class="h-20 border-b flex items-center px-6">
+    <div class="h-20 border-b border-slate-300 flex items-center px-6">
 
         <div class="flex items-center gap-3">
 
