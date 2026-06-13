@@ -40,8 +40,8 @@
             icon="📸"/>
 
         <x-stats-card
-            title="Plastic Waste"
-            value="{{ number_format($plastic) }}"
+            title="Anorganic Waste"
+            value="{{ number_format($anorganic) }}"
             icon="🧴"/>
 
         <x-stats-card
@@ -60,7 +60,7 @@
 
     <div class="grid lg:grid-cols-2 gap-6">
 
-        <x-chart-card title="Classification Trend">
+        <x-chart-card title="Classification Trend" :showAction="false">
 
             <div class="h-72">
                 <canvas id="trendChart"></canvas>
@@ -149,9 +149,9 @@
     new Chart(document.getElementById('distributionChart'), {
         type: 'pie',
         data: {
-            labels: ['Plastic Waste', 'Organic Waste', 'E-Waste'],
+            labels: @json($distributionLabels),
             datasets: [{
-                data: [{{ $plastic }}, {{ $organic }}, {{ $ewaste }}],
+                data: @json($distributionValues),
                 backgroundColor: ['#3b82f6', '#22c55e', '#f59e0b'],
             }]
         },

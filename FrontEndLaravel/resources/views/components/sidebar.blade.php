@@ -93,7 +93,7 @@
                 <span class="font-semibold">AI Chatbot</span>
             </a>
 
-            <a href="{{ route('analytics') }}"
+            {{-- <a href="{{ route('analytics') }}"
                class="flex items-center gap-3 p-3 rounded-xl hover:bg-lime-50 hover:text-lime-600 transition-colors duration-200">
 
                 <span class="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600">
@@ -105,7 +105,7 @@
                     </svg>
                 </span>
                 <span class="font-semibold">Analytics</span>
-            </a>
+            </a> --}}
 
             <a href="{{ route('profile') }}"
                class="flex items-center gap-3 p-3 rounded-xl hover:bg-lime-50 hover:text-lime-600 transition-colors duration-200">

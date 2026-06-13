@@ -9,20 +9,27 @@ class DashboardController extends Controller
     {
         $totalScans = Classification::where('user_id', auth()->id())->count();
 
-        $plastic = Classification::where('user_id', auth()->id())->where(
-            'category',
-            'Plastic Waste'
-        )->count();
+        $distributionData = Classification::where('user_id', auth()->id())
+            ->selectRaw('category, COUNT(*) as total')
+            ->groupBy('category')
+            ->pluck('total', 'category')
+            ->toArray();
 
-        $organic = Classification::where('user_id', auth()->id())->where(
-            'category',
-            'Organic Waste'
-        )->count();
+        $anorganic = $distributionData['anorganik'] ?? 0;
+        $organic = $distributionData['organik'] ?? 0;
+        $ewaste = $distributionData['e-waste'] ?? 0;
 
-        $ewaste = Classification::where('user_id', auth()->id())->where(
-            'category',
-            'E-Waste'
-        )->count();
+        $distributionLabels = [
+            'Inorganic Waste',
+            'Organic Waste',
+            'E-Waste',
+        ];
+
+        $distributionValues = [
+            $anorganic,
+            $organic,
+            $ewaste,
+        ];
 
         $recentActivities = Classification::where('user_id', auth()->id())
             ->latest()
@@ -47,9 +54,11 @@ class DashboardController extends Controller
 
         return view('dashboard.index',compact(
             'totalScans',
-            'plastic',
+            'anorganic',
             'organic',
             'ewaste',
+            'distributionLabels',
+            'distributionValues',
             'recentActivities',
             'trendLabels',
             'trendValues'

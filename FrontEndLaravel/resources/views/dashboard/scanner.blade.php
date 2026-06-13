@@ -386,16 +386,21 @@ async function startCamera() {
     }
 }
 
-function stopCamera() {
+function stopCamera(showFallback = true) {
     if (cameraStream) {
         cameraStream.getTracks().forEach(track => track.stop());
         cameraStream = null;
     }
 
     cameraVideo.classList.add('hidden');
-    cameraFallback.classList.remove('hidden');
     captureBtn.classList.add('hidden');
     stopCameraBtn.classList.add('hidden');
+
+    if (showFallback && preview.classList.contains('hidden')) {
+        cameraFallback.classList.remove('hidden');
+    } else {
+        cameraFallback.classList.add('hidden');
+    }
 }
 
 async function saveScan() {
@@ -512,7 +517,7 @@ captureBtn?.addEventListener('click', () => {
         const file = new File([blob], 'scan.jpg', { type: 'image/jpeg' });
         currentImageFile = file;
         showPreview(URL.createObjectURL(blob));
-        stopCamera();
+        stopCamera(false);
         await classifyImage(file);
     }, 'image/jpeg');
 });
@@ -526,7 +531,7 @@ imageInput?.addEventListener('change', function (event) {
     const reader = new FileReader();
     reader.onload = async function (e) {
         showPreview(e.target.result);
-        stopCamera();
+        stopCamera(false);
         await classifyImage(file);
     };
     reader.readAsDataURL(file);

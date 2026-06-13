@@ -1,5 +1,6 @@
 @props([
-'title'
+    'title',
+    'showAction' => true,
 ])
 
 <div class="bg-white rounded-3xl border p-6 shadow-sm animate-chart-appear">
@@ -10,9 +11,11 @@
             {{ $title }}
         </h3>
 
-        <button class="text-lime-600 text-sm font-bold">
-            View More
-        </button>
+        @if($showAction)
+            <button class="text-lime-600 text-sm font-bold">
+                View More
+            </button>
+        @endif
 
     </div>
 
