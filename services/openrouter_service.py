@@ -1,98 +1,65 @@
 import os
 import requests
-from dotenv import load_dotenv
+from typing import Optional
 
-load_dotenv()
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "google/gemma-2-9b-it:free")
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 
-API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+def build_prompt(message: str, predicted_class: Optional[str], category: Optional[str], confidence: Optional[float]) -> str:
+    context = []
+    if predicted_class:
+        context.append(f"Kelas spesifik: {predicted_class}")
+    if category:
+        context.append(f"Kategori utama: {category}")
+    if confidence is not None:
+        context.append(f"Confidence: {confidence:.2f}")
+
+    context_text = "\n".join(context) if context else "Tidak ada konteks prediksi gambar."
+
+    return f"""
+Anda adalah asisten edukasi pengelolaan sampah untuk aplikasi WISE.
+
+Konteks prediksi:
+{context_text}
+
+Pesan pengguna:
+{message}
+
+Tugas Anda:
+1. Berikan jawaban singkat, jelas, dan edukatif.
+2. Jika ada konteks prediksi, gunakan untuk memberi rekomendasi pengolahan sampah yang tepat.
+3. Jangan mengubah hasil klasifikasi.
+4. Jika confidence rendah, sarankan pengguna mengunggah gambar yang lebih jelas.
+5. Gunakan bahasa Indonesia yang sederhana.
+""".strip()
 
 
-def ask_gemma(prompt: str):
+def chat_with_gemma(message: str, predicted_class: Optional[str] = None, category: Optional[str] = None, confidence: Optional[float] = None) -> str:
+    if not OPENROUTER_API_KEY:
+        return "OPENROUTER_API_KEY belum diset di environment."
 
-    # Validasi API Key
-    if not API_KEY:
-        return {
-            "success": False,
-            "error": "OPENROUTER_API_KEY tidak ditemukan di file .env"
-        }
-
-    url = "https://openrouter.ai/api/v1/chat/completions"
+    prompt = build_prompt(message, predicted_class, category, confidence)
 
     headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json"
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "http://localhost",
+        "X-Title": "WISE API",
     }
 
-    data = {
-        "model": "google/gemma-4-31b-it",
+    payload = {
+        "model": OPENROUTER_MODEL,
         "messages": [
-            {
-                "role": "user",
-                "content": prompt
-            }
-        ]
+            {"role": "system", "content": "Anda adalah asisten edukasi sampah yang ringkas dan akurat."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.4
     }
 
-    try:
+    response = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=60)
+    response.raise_for_status()
 
-        response = requests.post(
-            url,
-            headers=headers,
-            json=data,
-            timeout=60
-        )
-
-        # Jika response gagal
-        response.raise_for_status()
-
-        result = response.json()
-
-        # Ambil isi jawaban AI
-        answer = result["choices"][0]["message"]["content"]
-
-        # Ambil metadata usage
-        usage = result.get("usage", {})
-
-        return {
-            "success": True,
-            "model": result.get("model"),
-            "response": answer,
-            "usage": {
-                "prompt_tokens": usage.get("prompt_tokens"),
-                "completion_tokens": usage.get("completion_tokens"),
-                "total_tokens": usage.get("total_tokens"),
-                "cost": usage.get("cost")
-            }
-        }
-
-    except requests.exceptions.Timeout:
-        return {
-            "success": False,
-            "error": "Request timeout ke OpenRouter"
-        }
-
-    except requests.exceptions.HTTPError as e:
-        return {
-            "success": False,
-            "error": f"HTTP Error: {str(e)}",
-            "details": response.text
-        }
-
-    except requests.exceptions.RequestException as e:
-        return {
-            "success": False,
-            "error": f"Request Error: {str(e)}"
-        }
-
-    except KeyError:
-        return {
-            "success": False,
-            "error": "Format response OpenRouter tidak sesuai",
-            "raw_response": result
-        }
-
-    except Exception as e:
-        return {
-            "success": False,
-            "error": f"Unexpected Error: {str(e)}"
-        }
+    data = response.json()
+    return data["choices"][0]["message"]["content"]

@@ -1,0 +1,15 @@
+{
+  "accu": "e-waste",
+  "battery": "e-waste",
+  "botol_kaca": "anorganik",
+  "botol_plastik": "anorganik",
+  "buah_sayur": "organik",
+  "bungkus_plastik_makanan": "anorganik",
+  "cup_plastik": "anorganik",
+  "kaleng_minuman": "anorganik",
+  "kardus": "anorganik",
+  "kertas": "anorganik",
+  "pakaian": "anorganik",
+  "sepatu": "anorganik",
+  "sisa_makanan": "organik"
+}

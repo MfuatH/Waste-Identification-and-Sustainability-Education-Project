@@ -1,36 +1,7 @@
-# Virtual Environment
 venv/
-env/
-
-# Python Cache
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-
-# Environment Variables
 .env
-
-# Jupyter Notebook
-.ipynb_checkpoints/
-
-# VS Code
-.vscode/
-
-# PyCharm
-.idea/
-
-# Operating System Files
 .DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Build Files
-dist/
-build/
-
-# Temporary Files
-*.tmp
-*.temp
+.vscode/
+.ipynb_checkpoints/

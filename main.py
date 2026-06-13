@@ -1,66 +1,19 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from routers.predict_router import router as predict_router
+from routers.chat_router import router as chat_router
 
-from services.openrouter_service import ask_gemma
-
-# Inisialisasi FastAPI
 app = FastAPI(
-    title="AKSA AI Backend",
-    description="Backend API untuk integrasi Gemma dan model Machine Learning",
+    title="WISE API",
+    description="FastAPI backend untuk integrasi Machine Learning dan Gemma melalui OpenRouter",
     version="1.0.0"
 )
 
+app.include_router(predict_router)
+app.include_router(chat_router)
 
-# Request Schema
-class ChatRequest(BaseModel):
-    prompt: str
-
-
-# Root Endpoint
-@app.get("/")
+@app.get("/", tags=["Root"])
 def root():
-
     return {
-        "success": True,
-        "message": "AKSA AI Backend is running"
-    }
-
-
-
-# Health Check Endpoint
-@app.get("/health")
-def health_check():
-
-    return {
-        "status": "healthy"
-    }
-
-
-# Endpoint Chat AI Gemma
-@app.post("/chat")
-def chat(data: ChatRequest):
-
-    result = ask_gemma(data.prompt)
-
-    return result
-
-
-# Endpoint Machine Learning
-class PredictRequest(BaseModel):
-    price_per_unit: float
-    units_sold: int
-    operating_margin: float
-
-
-@app.post("/predict")
-def predict(data: PredictRequest):
-
-    result = predict_sales(
-        data.price_per_unit,
-        data.units_sold,
-        data.operating_margin
-    )
-
-    return {
-        "prediction": result
+        "message": "WISE API running",
+        "status": "ok"
     }
