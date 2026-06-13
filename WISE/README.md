@@ -1,44 +1,45 @@
-# Waste Identification and Sustainability Education Project (WISE)
+# Waste Identification and Sustainability Education (WISE)
 
-Proyek WISE menggabungkan sebuah backend ML berbasis FastAPI dan frontend berbasis Laravel untuk mengidentifikasi jenis sampah dan memberikan edukasi keberlanjutan.
+Deskripsi singkat:
 
-Folder utama:
+- Proyek ini menggabungkan model Machine Learning (FastAPI) dan antarmuka web (Laravel) untuk mengidentifikasi jenis sampah dan memberikan edukasi keberlanjutan.
 
-- `FastAPI/` — backend Python, model ML, endpoint prediksi.
-- `FrontEndLaravel/` — antarmuka web Laravel untuk interaksi pengguna.
+Persyaratan singkat:
 
-Mulai cepat (lokal):
+- Python 3.8+ untuk backend
+- PHP 8+ dan Composer untuk frontend
 
-1. Backend (FastAPI):
+Cara menjalankan (lokal):
 
-   - Masuk ke folder `FastAPI`.
-   - Buat environment Python dan install dependensi:
+1) Backend (FastAPI)
 
-     python -m venv .venv
-     .venv\Scripts\activate
-     pip install -r requirements.txt
+- Buka terminal, masuk ke folder `FastAPI`.
+- Buat virtual environment dan install dependensi:
 
-   - Jalankan server:
+  python -m venv .venv
+  .venv\Scripts\activate
+  pip install -r requirements.txt
 
-     uvicorn main:app --reload --port 8000
+- Jalankan server:
 
-2. Frontend (Laravel):
+  uvicorn main:app --reload --port 8000
 
-   - Masuk ke folder `FrontEndLaravel`.
-   - Salin `.env.example` ke `.env`, lalu jalankan:
+2) Frontend (Laravel)
 
-     composer install
-     php artisan key:generate
-     php artisan migrate
-     php artisan serve
+- Buka terminal, masuk ke folder `FrontEndLaravel`.
+- Salin environment dan install dependensi:
 
-Pengaturan integrasi:
+  copy .env.example .env
+  composer install
 
-- Pastikan URL API FastAPI (`http://localhost:8000` secara default) tersedia untuk frontend.
-- Model ML dan file terkait berada di `FastAPI/models/`.
+- Generate app key dan jalankan:
 
-Push ke GitHub:
+  php artisan key:generate
+  php artisan migrate   # opsional bila menggunakan database
+  php artisan serve
 
-- Branch target: `WiseProject` (branch akan dibuat dan dipush ke remote yang Anda berikan).
+Integrasi:
 
-Jika Anda ingin saya melakukan push sekarang, beri konfirmasi (saya akan membuat branch `WiseProject`, commit perubahan README, dan push ke `https://github.com/MfuatH/Waste-Identification-and-Sustainability-Education-Project.git`).
+- Pastikan frontend mengakses API backend (default: `http://localhost:8000`). Sesuaikan variabel environment di `FrontEndLaravel/.env` jika perlu.
+
+Itu saja: ringkas deskripsi proyek dan langkah menjalankan backend serta frontend.
