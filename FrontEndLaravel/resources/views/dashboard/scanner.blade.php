@@ -203,7 +203,7 @@
 </div>
 
 <script>
-const FASTAPI_URL = "{{ env('FASTAPI_URL', 'http://127.0.0.1:8000') }}";
+const FASTAPI_URL = "{{ env('FASTAPI_URL', 'http://127.0.0.1:8000') }}".replace(/\/+$/g, '');
 const PREDICT_ENDPOINT = `${FASTAPI_URL}/predict`;
 const CHAT_PAGE_URL = "{{ route('chatbot') }}";
 const cameraVideo = document.getElementById('cameraVideo');
@@ -226,6 +226,8 @@ const recommendations = document.getElementById('recommendations');
 
 let cameraStream = null;
 let currentImageFile = null;
+let currentCategoryKey = null;
+let currentPredictedClass = null;
 let currentRecommendations = [
     'Start a scan or upload an image first.'
 ];
@@ -337,26 +339,21 @@ function updateYoutubeTutorial(category) {
 }
 
 function updateResult(label, categoryKey, confidence, recommendationsText) {
+    currentCategoryKey = categoryKey || 'anorganik';
+    currentPredictedClass = label;
 
     resultCategory.textContent = label;
-    resultCategoryType.textContent = categoryNames[categoryKey] || categoryKey;
+    resultCategoryType.textContent = categoryNames[categoryKey] || categoryNames.anorganik;
 
-    confidenceBar.style.width =
-        `${confidence}%`;
+    confidenceBar.style.width = `${confidence}%`;
+    confidenceValue.textContent = `${confidence}%`;
 
-    confidenceValue.textContent =
-        `${confidence}%`;
-
-    currentRecommendations =
-        recommendationsText;
-
-    recommendations.innerHTML =
-        recommendationsText
-            .map(item => `<li>• ${item}</li>`)
-            .join('');
+    currentRecommendations = recommendationsText;
+    recommendations.innerHTML = recommendationsText
+        .map(item => `<li>• ${item}</li>`)
+        .join('');
 
     updateYoutubeTutorial(categoryKey);
-
     saveScanBtn.classList.remove('hidden');
 }
 
@@ -407,7 +404,7 @@ async function saveScan() {
         return;
     }
 
-    const category = resultCategory.textContent.trim();
+    const category = currentCategoryKey || 'anorganik';
     const confidence = parseFloat(confidenceValue.textContent.replace('%', '')) || 0;
     const recommendationText = currentRecommendations.join('\n');
 
@@ -476,6 +473,7 @@ async function classifyImage(file) {
 
         const classLabel = getReadableLabel(data.predicted_class);
         const categoryKey = data.category || 'anorganik';
+        const categoryLabel = categoryNames[categoryKey] || categoryNames.anorganik;
         const confidencePercent = Math.round((data.confidence || 0) * 10000) / 100;
         const recommendationList = getRecommendations(categoryKey, data.predicted_class);
 

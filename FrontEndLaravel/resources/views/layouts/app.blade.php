@@ -44,7 +44,7 @@
     @stack('styles')
 </head>
 
-<body class="bg-slate-50 overflow-x-hidden">
+<body class="bg-gradient-to-b from-lime-50 via-white to-white overflow-x-hidden">
 
 <div class="min-h-screen">
     <div class="flex flex-col lg:flex-row">

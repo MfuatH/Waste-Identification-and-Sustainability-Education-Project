@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 BASE_DIR = Path(__file__).resolve().parent
 DOTENV_PATHS = [
     BASE_DIR / '.env',
-    BASE_DIR.parent / 'VoksSmartWaste' / '.env'
+    BASE_DIR.parent / 'FrontEndLaravel' / '.env'
 ]
 for dotenv_path in DOTENV_PATHS:
     if dotenv_path.exists():

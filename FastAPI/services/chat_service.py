@@ -7,7 +7,7 @@ from typing import Optional
 BASE_DIR = Path(__file__).resolve().parent.parent
 DOTENV_PATHS = [
     BASE_DIR / '.env',
-    BASE_DIR / 'VoksSmartWaste' / '.env'
+    BASE_DIR / 'Frontend' / '.env'
 ]
 for dotenv_path in DOTENV_PATHS:
     if dotenv_path.exists():

@@ -16,7 +16,15 @@
                 @foreach($histories as $history)
                     <div class="border rounded-3xl overflow-hidden shadow-sm">
                         <div class="md:flex">
-                            <img src="{{ asset('storage/'.$history->image) }}" alt="Scan Image" class="w-full md:w-48 h-40 object-cover" />
+                            @php
+                                $storagePath = storage_path('app/public/' . ($history->image ?? ''));
+                                if ($history->image && file_exists($storagePath)) {
+                                    $imgUrl = asset('storage/' . $history->image);
+                                } else {
+                                    $imgUrl = asset('images/placeholder.png');
+                                }
+                            @endphp
+                            <img src="{{ $imgUrl }}" alt="Scan Image" class="w-full md:w-48 h-40 object-cover" />
                             <div class="p-6 space-y-3">
                                 <div class="flex items-center justify-between">
                                     <div>

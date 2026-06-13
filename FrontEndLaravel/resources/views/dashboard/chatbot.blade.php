@@ -2,55 +2,43 @@
 
 @section('content')
 
-<div class="bg-white rounded-3xl border h-[80vh] flex flex-col">
+<div class="bg-white/80 backdrop-blur-sm rounded-3xl border h-[80vh] flex flex-col shadow-lg overflow-hidden">
 
-    <div class="border-b p-6 flex items-center gap-4">
+    <div class="p-6 flex items-center gap-4 bg-gradient-to-r from-lime-100 to-white">
 
-        <div class="w-14 h-14 rounded-2xl bg-lime-500 flex items-center justify-center text-white text-2xl">
-            🤖
-        </div>
+        <div class="w-14 h-14 rounded-2xl bg-lime-500 flex items-center justify-center text-white text-2xl shadow">🤖</div>
 
         <div>
-
-            <h2 class="font-black text-xl">
-                WISE AI Assistant
-            </h2>
-
-            <p class="text-sm text-slate-500">
-                Powered by Gemma + FastAPI
-            </p>
-
+            <h2 class="font-black text-xl">WISE AI Assistant</h2>
+            <p class="text-sm text-slate-600">Fast, friendly tips on recycling and waste handling.</p>
         </div>
+
+        <div class="ml-auto text-sm text-slate-500">Powered by Gemma + FastAPI</div>
 
     </div>
 
-    <div class="flex-1 overflow-hidden p-8 bg-slate-50 flex flex-col">
+    <div class="flex-1 overflow-hidden p-6 bg-transparent flex flex-col">
 
         <div id="chatMessages" class="flex-1 overflow-y-auto space-y-4 pr-2">
-            <div class="bg-white border rounded-2xl p-4 max-w-xl">
-                Halo 👋 Silakan ketik pertanyaanmu tentang daur ulang atau pengelolaan sampah.
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-full bg-lime-200 flex items-center justify-center text-lime-700">AI</div>
+                <div class="bg-white border rounded-2xl p-4 max-w-xl shadow-sm">Halo 👋 Silakan ketik pertanyaanmu tentang daur ulang atau pengelolaan sampah.</div>
             </div>
         </div>
 
         <div class="mt-4 border-t pt-4">
-            <div class="flex gap-3">
+            <div class="flex gap-3 items-center">
                 <input
                     id="chatInput"
                     type="text"
-                    placeholder="Ask about recycling..."
-                    class="flex-1 border rounded-2xl px-5 py-3"
+                    placeholder="Tanyakan tentang pemilahan, daur ulang, atau penyimpanan sampah..."
+                    class="flex-1 border border-slate-200 rounded-full px-5 py-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-lime-300"
                 >
 
-                <button
-                    id="chatSendBtn"
-                    class="bg-lime-500 text-white px-8 rounded-2xl">
-                    Send
-                </button>
+                <button id="chatSendBtn" class="bg-lime-600 hover:bg-lime-700 text-white px-6 py-2 rounded-full shadow">Kirim</button>
             </div>
 
-            <p id="chatStatus" class="mt-3 text-sm text-slate-500">
-                Chatbot terhubung ke FastAPI.
-            </p>
+            <p id="chatStatus" class="mt-3 text-sm text-slate-500">Chatbot terhubung ke FastAPI.</p>
         </div>
 
     </div>
@@ -66,12 +54,29 @@ const chatSendBtn = document.getElementById('chatSendBtn');
 const chatStatus = document.getElementById('chatStatus');
 
 function addChatBubble(text, sender) {
+    const wrapper = document.createElement('div');
+    wrapper.className = sender === 'user' ? 'flex items-start gap-3 justify-end' : 'flex items-start gap-3';
+
+    const avatar = document.createElement('div');
+    avatar.className = sender === 'user' ? 'w-10 h-10 rounded-full bg-lime-600 flex items-center justify-center text-white ml-2' : 'w-10 h-10 rounded-full bg-lime-200 flex items-center justify-center text-lime-700';
+    avatar.textContent = sender === 'user' ? 'You' : 'AI';
+
     const bubble = document.createElement('div');
     bubble.className = sender === 'user'
-        ? 'bg-lime-500 text-white rounded-2xl p-4 ml-auto max-w-xl'
-        : 'bg-white border rounded-2xl p-4 max-w-xl';
+        ? 'bg-lime-600 text-white rounded-2xl p-4 max-w-xl shadow ml-2'
+        : 'bg-white border rounded-2xl p-4 max-w-xl shadow-sm';
     bubble.textContent = text;
-    chatMessages.appendChild(bubble);
+
+    if (sender === 'user') {
+        // user: bubble then avatar
+        wrapper.appendChild(bubble);
+        wrapper.appendChild(avatar);
+    } else {
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+    }
+
+    chatMessages.appendChild(wrapper);
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 

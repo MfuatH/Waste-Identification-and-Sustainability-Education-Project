@@ -82,49 +82,36 @@
 
     <div class="bg-white rounded-3xl border p-6">
 
-        <h3 class="text-2xl font-black mb-5">
-            Recent Activities
-        </h3>
+        <h3 class="text-2xl font-black mb-5">Recent Scans</h3>
 
-        <table class="w-full">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @forelse($recentActivities as $activity)
+                @php
+                    $storagePath = storage_path('app/public/' . ($activity->image ?? ''));
+                    if (!empty($activity->image) && file_exists($storagePath)) {
+                        $img = asset('storage/' . $activity->image);
+                    } else {
+                        $img = asset('images/placeholder.png');
+                    }
+                @endphp
 
-            <thead>
+                <div class="flex flex-col rounded-2xl overflow-hidden border shadow-sm">
+                    <img src="{{ $img }}" alt="scan" class="w-full h-36 object-cover" />
+                    <div class="p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold">{{ $activity->category }}</h4>
+                                <p class="text-sm text-slate-500">{{ $activity->created_at->diffForHumans() }}</p>
+                            </div>
+                            <div class="text-lime-600 font-semibold">{{ number_format($activity->confidence, 1) }}%</div>
+                        </div>
+                    </div>
+                </div>
 
-                <tr class="border-b">
-
-                    <th class="text-left py-3">Time</th>
-                    <th class="text-left py-3">Waste Type</th>
-                    <th class="text-left py-3">Confidence</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody>
-                @forelse($recentActivities as $activity)
-                    <tr class="border-b">
-                        <td class="py-4">
-                            {{ $activity->created_at->format('d M Y H:i') }}
-                        </td>
-
-                        <td>
-                            {{ $activity->category }}
-                        </td>
-
-                        <td>
-                            {{ number_format($activity->confidence, 1) }}%
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="3" class="py-6 text-center text-slate-500">
-                            No scan history available yet.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-
-        </table>
+            @empty
+                <div class="col-span-3 text-center text-slate-500 py-6">No recent scans yet.</div>
+            @endforelse
+        </div>
 
     </div>
 
