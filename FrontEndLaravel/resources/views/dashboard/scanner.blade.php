@@ -584,7 +584,7 @@ captureBtn?.addEventListener('click', () => {
     const height = cameraVideo.videoHeight || 480;
 
     canvas.width = width;
-    canvas.height = height
+    canvas.height = height;
 
     const ctx = canvas.getContext('2d');
     ctx.drawImage(cameraVideo, 0, 0, width, height);
