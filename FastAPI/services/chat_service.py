@@ -485,67 +485,26 @@ def get_waste_recommendation(
     return html
 
 
-def build_youtube_prompt(
-    predicted_class: str,
-    category: str
-) -> str:
-    """Build prompt untuk mencari YouTube link rekomendasi edukasi sampah dari Gemma."""
-    readable_class = predicted_class.replace('_', ' ').title()
-    
-    return f"""TASK: Carilah 1 video YouTube TERBAIK untuk edukasi tentang: {readable_class} ({category})
-
-CRITICAL REQUIREMENTS:
-1. Video PASTI masih TERSEDIA & AKTIF (bukan deleted/private/unavailable)
-2. Channel TERPERCAYA: Government, NGO resmi, Universitas, TED-Ed, BBC Learning, National Geographic, dsb
-3. Video punya 10K+ views (bukti berkualitas)
-4. Preferensi: Bahasa Indonesia atau Inggris
-5. JANGAN asal-asalan - lebih baik tidak ada link daripada link yang salah!
-
-TRUSTED CHANNELS EXAMPLES:
-- TED-Ed Bahasa Indonesia
-- National Geographic Indonesia
-- Government Environmental Agencies
-- Reputable Educational Channels
-- University or NGO official channels
-
-RESPONS FORMAT - EXACTLY 2 LINES:
-[Line 1] Video Title (dari channel resmi)
-[Line 2] Link (https://www.youtube.com/watch?v=11CHARVIDEOEXAMPLE atau tidak ada)
-
-CRITICAL RULES:
-✓ Jika YAKIN ada video berkualitas tinggi: berikan link-nya
-✓ Jika TIDAK YAKIN / TIDAK TAHU: return "I'm not confident" di line 2 (NO GUESSING!)
-✓ Video ID = 11 karakter (mix of upper/lower/digit/special chars)
-✓ JANGAN PERNAH generate/hallucinate video ID yang tidak pasti!
-✓ Prioritas: video publikasi 2+ tahun lalu (established, stable)
-
-EXAMPLE GOOD RESPONSE:
-How to Recycle Plastic Properly - Educational Tutorial
-https://www.youtube.com/watch?v=dQw4w9WgXcQ
-
-EXAMPLE BAD RESPONSE (Jangan lakukan ini!):
-Cara Daur Ulang Plastik
-https://www.youtube.com/watch?v=randomstringhere (← WRONG! No guessing!)
-
-Remember: CONFIDENCE FIRST. If you're not sure, say so!""".strip()
 
 
-# Fallback YouTube links - hanya digunakan jika Gemma gagal
-# Ini adalah safety net agar user tetap dapat akses tutorial
+# ============================================================================
+# YOUTUBE HARDCODED LINKS - Edit these URLs dengan link YouTube yang benar
+# Format: "waste_type": {"title": "Judul Video", "url": "https://youtube.com/..."}
+# ============================================================================
 YOUTUBE_FALLBACK = {
-    "botol_plastik": {"title": "🔍 Cari: Daur Ulang Botol Plastik", "url": "https://www.youtube.com/results?search_query=cara+daur+ulang+botol+plastik"},
-    "botol_kaca": {"title": "🔍 Cari: Daur Ulang Botol Kaca", "url": "https://www.youtube.com/results?search_query=cara+daur+ulang+botol+kaca"},
-    "kaleng_minuman": {"title": "🔍 Cari: Daur Ulang Kaleng", "url": "https://www.youtube.com/results?search_query=daur+ulang+kaleng+minuman"},
-    "kardus": {"title": "🔍 Cari: Daur Ulang Kardus", "url": "https://www.youtube.com/results?search_query=cara+daur+ulang+kardus"},
-    "kertas": {"title": "🔍 Cari: Daur Ulang Kertas", "url": "https://www.youtube.com/results?search_query=cara+daur+ulang+kertas"},
-    "bungkus_plastik_makanan": {"title": "🔍 Cari: Mengurangi Plastik Makanan", "url": "https://www.youtube.com/results?search_query=reduce+plastik+makanan"},
-    "cup_plastik": {"title": "🔍 Cari: Daur Ulang Cup Plastik", "url": "https://www.youtube.com/results?search_query=daur+ulang+cup+plastik"},
-    "sisa_makanan": {"title": "🔍 Cari: Kompos Limbah Makanan", "url": "https://www.youtube.com/results?search_query=membuat+kompos+limbah+makanan"},
-    "buah_sayur": {"title": "🔍 Cari: Kompos Buah Sayur", "url": "https://www.youtube.com/results?search_query=kompos+buah+sayur+busuk"},
-    "pakaian": {"title": "🔍 Cari: Daur Ulang Pakaian", "url": "https://www.youtube.com/results?search_query=ide+daur+ulang+pakaian+bekas"},
-    "sepatu": {"title": "🔍 Cari: Daur Ulang Sepatu", "url": "https://www.youtube.com/results?search_query=cara+daur+ulang+sepatu+bekas"},
-    "battery": {"title": "🔍 Cari: Daur Ulang Baterai", "url": "https://www.youtube.com/results?search_query=pentingnya+daur+ulang+baterai"},
-    "accu": {"title": "🔍 Cari: Pengelolaan Limbah Accu", "url": "https://www.youtube.com/results?search_query=pengelolaan+limbah+accu+kendaraan"}
+    "botol_plastik": {"title": "video tutorial pengolahan botol plastik", "url": "https://youtu.be/9LovD6VCa40?si=sJOwy-eed7rcs6Mw"},
+    "botol_kaca": {"title": "video tutorial pengolahan botol kaca", "url": "https://youtube.com/shorts/JoI5hzQyRD0?si=4Hoaipmt69wG9eXy"},
+    "kaleng_minuman": {"title": "video tutorial pengolahan kaleng minuman]", "url": "https://youtube.com/shorts/AWDSZZt6TZ0?si=IQyxMPw3EcIBdqPS"},
+    "kardus": {"title": "video tutorial pengolahan kardus", "url": "https://youtu.be/3b6YMmPIydk?si=INJ9d0kHPoWOwa6t"},
+    "kertas": {"title": "video tutorial pengolahan kertas", "url": "https://youtube.com/shorts/olBErEr5eTo?si=smlGzZEbOz0QFMZx"},
+    "bungkus_plastik_makanan": {"title": "video tutorial pengolahan bungkus plastik", "url": "https://youtu.be/MJd3bo_XRaU?si=fXVvb58X34DCVIrc"},
+    "cup_plastik": {"title": "video tutorial pengolahan cup plastik]", "url": "https://youtube.com/shorts/_zgCSFJTMpo?si=dTJawLnCDGkjrfm7"},
+    "sisa_makanan": {"title": "video tutorial pengolahan sisa makanan]", "url": "https://youtu.be/0qfGNQ499JA?si=KbvzZsKepUENvBoS"},
+    "buah_sayur": {"title": "video tutorial pengolahan buah sayur]", "url": "https://youtu.be/J8STpSfvkwU?si=sKu1js-NfMVLG05e"},
+    "pakaian": {"title": "video tutorial pengolahan pakaian]", "url": "https://youtu.be/q-_sT1AdzPQ?si=mKvHrpL_ko47wp-S"},
+    "sepatu": {"title": "video tutorial pengolahan sepatu]", "url": "https://youtu.be/kNflGgtJyLA?si=zJ4go1vvhRAenlP_"},
+    "battery": {"title": "[video tutorial pengolahan battery]", "url": "https://youtu.be/8035JvuCKWw?si=dQ5FiNdIKPb5FKQC"},
+    "accu": {"title": "video tutorial pengolahan accu]", "url": "https://www.youtube.com/watch?v=7JWv-nkkggc"}
 }
 
 
@@ -554,7 +513,10 @@ def get_youtube_recommendation(
     category: str
 ) -> dict:
     """
-    Mencari YouTube link rekomendasi edukasi sampah dari Gemma.
+    Get YouTube tutorial link untuk sampah tertentu.
+    
+    SIMPLE VERSION: Hanya ambil dari YOUTUBE_FALLBACK (hardcoded links).
+    User dapat mengedit links langsung di YOUTUBE_FALLBACK dictionary.
     
     Args:
         predicted_class: Jenis sampah (e.g., 'botol_plastik')
@@ -564,293 +526,25 @@ def get_youtube_recommendation(
         dict dengan keys: title, url
     """
     
-    if not OPENROUTER_API_KEY:
-        print("No API key for YouTube recommendation")
-        return {
-            "title": "Tutorial Pengelolaan Sampah",
-            "url": "#"
-        }
+    predicted_class_lower = predicted_class.lower()
     
-    # Cache check
-    cache_key = f"youtube_{predicted_class}_{category}".lower()
-    if cache_key in _response_cache:
-        print(f"Using cached YouTube link for: {predicted_class}")
-        return _response_cache[cache_key]
-    
-    prompt = build_youtube_prompt(predicted_class, category)
-    
-    headers = {
-        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost",
-        "X-Title": "WISE API"
-    }
-    
-    # System message dengan knowledge base tentang popular educational channels
-    system_message = """Kamu adalah AI ahli yang mencari video YouTube berkualitas tinggi tentang pengelolaan sampah & sustainability.
-
-PENTING - CRITICAL RULES:
-1. HANYA berikan link video yang PASTI 100% MASIH TERSEDIA dan AKTIF
-2. Video harus dari channel TERPERCAYA: Official Government, NGO, Universitas, Channel Edukasi terkenal
-3. Jika TIDAK YAKIN video masih ada/aktif, JANGAN berikan link tersebut!
-4. Better to return NOTHING than return a BROKEN link
-
-KNOWN TRUSTED CHANNELS & TOPICS:
-- Waste management channels: TED-Ed, National Geographic, BBC Learning, Crash Course
-- Local waste management: Government environmental agencies, Local NGOs
-- Recycling tutorials: Popular DIY channels dengan subscriber banyak
-
-VIDEO QUALITY CRITERIA:
-- Harus punya 10K+ views (bukti video berkualitas)
-- Harus dari channel resmi atau terkenal
-- Publikasi minimal 2 tahun lalu (cukup stable)
-- Rating positif & banyak like
-
-RESPON KAMU:
-Jika YAKIN ada video yang cocok:
-  Format: [Title]
-          https://www.youtube.com/watch?v=VIDEOID
-
-Jika TIDAK YAKIN / TIDAK TAHU:
-  Jangan asal-asalan berikan link!
-  Return: [I'm not confident]
-          #
-
-JANGAN PERNAH memberikan link yang tidak yakin!"""
-    
-    payload = {
-        "model": OPENROUTER_MODEL,
-        "messages": [
-            {
-                "role": "system",
-                "content": system_message
-            },
-            {
-                "role": "user",
-                "content": prompt
+    # Jika ada di YOUTUBE_FALLBACK, return langsung
+    if predicted_class_lower in YOUTUBE_FALLBACK:
+        link = YOUTUBE_FALLBACK[predicted_class_lower]
+        # Cek apakah user sudah isi atau masih template
+        if "[ATUR:" in link.get("url", ""):
+            print(f"⚠️ YouTube link untuk '{predicted_class}' belum diatur - masih template")
+            return {
+                "title": f"Silakan atur tutorial untuk {predicted_class}",
+                "url": "#"
             }
-        ],
-        "temperature": 0.0,  # Deterministic - no randomness
-        "top_p": 1.0,
-        "top_k": 1
-    }
+        return link
     
-    max_retries = 3
-    retry_delay = 1
-    
-    for attempt in range(max_retries):
-        try:
-            response = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=30)
-            
-            if response.status_code == 200:
-                data = response.json()
-                raw_response = data["choices"][0]["message"]["content"].strip()
-                
-                # Parse response: expect 2 lines (title + url)
-                lines = [line.strip() for line in raw_response.split('\n') if line.strip()]
-                
-                if len(lines) >= 2:
-                    title = lines[0]
-                    url = lines[1]
-                    
-                    # Skip jika Gemma bilang "not confident"
-                    if "not confident" in url.lower() or url == "#":
-                        print(f"Gemma not confident for: {predicted_class}")
-                        return {
-                            "title": title if title else "Sedang mencari tutorial terbaik",
-                            "url": "#"
-                        }
-                    
-                    # Validate URL adalah YouTube link yang valid
-                    if _is_valid_youtube_url_strict(url):
-                        result = {"title": title, "url": url}
-                        _response_cache[cache_key] = result
-                        print(f"✓ Got valid YouTube link from Gemma for: {predicted_class}")
-                        return result
-                    else:
-                        print(f"✗ Gemma gave invalid/hallucinated URL: {url}")
-                        # Retry with same attempt (tidak count sebagai failed attempt)
-                        if attempt < max_retries - 1:
-                            print(f"  Retrying (attempt {attempt + 1}/{max_retries})...")
-                            time.sleep(retry_delay)
-                            continue
-                        else:
-                            # Jika semua retry fail, return safe message
-                            return {
-                                "title": "Tutorial Pengelolaan Sampah",
-                                "url": "#"
-                            }
-                
-                # Jika parsing gagal
-                print(f"✗ Gemma response invalid for: {predicted_class}")
-                if attempt < max_retries - 1:
-                    print(f"  Retrying (attempt {attempt + 1}/{max_retries})...")
-                    time.sleep(retry_delay)
-                    continue
-                else:
-                    return {
-                        "title": "Tutorial Pengelolaan Sampah",
-                        "url": "#"
-                    }
-            
-            elif response.status_code == 429:
-                if attempt < max_retries - 1:
-                    wait_time = retry_delay * (2 ** attempt)
-                    print(f"⚠️ Rate limited. Retry dalam {wait_time}s...")
-                    time.sleep(wait_time)
-                    continue
-                else:
-                    print("⚠️ Rate limited - all retries exhausted")
-                    return {
-                        "title": "API sedang overload",
-                        "url": "#"
-                    }
-            
-            else:
-                print(f"✗ API error {response.status_code}")
-                if attempt < max_retries - 1:
-                    time.sleep(retry_delay)
-                    continue
-                else:
-                    return {
-                        "title": "Terjadi kesalahan",
-                        "url": "#"
-                    }
-        
-        except requests.exceptions.Timeout:
-            print("⚠️ Timeout")
-            if attempt < max_retries - 1:
-                time.sleep(retry_delay)
-                continue
-            else:
-                return {
-                    "title": "Timeout - silakan coba lagi",
-                    "url": "#"
-                }
-        except requests.exceptions.ConnectionError:
-            print("⚠️ Connection error")
-            if attempt < max_retries - 1:
-                time.sleep(retry_delay)
-                continue
-            else:
-                return {
-                    "title": "Koneksi error",
-                    "url": "#"
-                }
-        except Exception as e:
-            print(f"✗ Error: {str(e)}")
-            if attempt < max_retries - 1:
-                time.sleep(retry_delay)
-                continue
-            else:
-                return {
-                    "title": "Error mencari tutorial",
-                    "url": "#"
-                }
-    
-    # Jika semua Gemma attempts fail, fallback ke hardcoded links
-    print(f"⏹️ All Gemma attempts failed for: {predicted_class}. Using hardcoded fallback.")
-    if predicted_class.lower() in YOUTUBE_FALLBACK:
-        fallback = YOUTUBE_FALLBACK[predicted_class.lower()]
-        print(f"   → Fallback: {fallback['title']}")
-        return fallback
-    
-    # Last resort: generic message
+    # Jika tidak ada di dictionary
+    print(f"⚠️ Waste type '{predicted_class}' tidak ada di YOUTUBE_FALLBACK")
     return {
-        "title": "Tutorial Pengelolaan Sampah",
+        "title": "Tutorial tidak tersedia",
         "url": "#"
     }
 
 
-def _try_get_youtube_from_gemma(
-    predicted_class: str,
-    category: str
-) -> Optional[dict]:
-    """
-    [DEPRECATED - use get_youtube_recommendation directly]
-    """
-    return None
-
-
-def _is_valid_youtube_url_strict(url: str) -> bool:
-    """
-    Strict validation untuk YouTube URL.
-    Extract & validate video ID untuk detect hallucination.
-    
-    Args:
-        url: YouTube URL untuk divalidasi
-    
-    Returns:
-        True jika URL valid dan video ID terlihat legitimate
-    """
-    import re
-    
-    if not url or url == "#":
-        return False
-    
-    url_lower = url.lower()
-    
-    # Must start with https:// atau http://
-    if not url.startswith(('https://', 'http://')):
-        print(f"  [VALIDATION] Invalid URL scheme: {url}")
-        return False
-    
-    # Must contain youtube domain
-    if 'youtube' not in url_lower and 'youtu.be' not in url_lower:
-        print(f"  [VALIDATION] Not a YouTube URL: {url}")
-        return False
-    
-    # Extract video ID
-    video_id = None
-    
-    # Try pattern: youtube.com/watch?v=ID
-    match = re.search(r'youtube\.com/watch\?v=([\w-]{11})', url)
-    if match:
-        video_id = match.group(1)
-    
-    # Try pattern: youtu.be/ID
-    if not video_id:
-        match = re.search(r'youtu\.be/([\w-]{11})', url)
-        if match:
-            video_id = match.group(1)
-    
-    # Try pattern: youtube.com/embed/ID
-    if not video_id:
-        match = re.search(r'youtube\.com/embed/([\w-]{11})', url)
-        if match:
-            video_id = match.group(1)
-    
-    # Video ID harus ditemukan dan harus 11 karakter
-    if not video_id or len(video_id) != 11:
-        print(f"  [VALIDATION] Invalid video ID length: {url}")
-        return False
-    
-    # Video ID hanya boleh alphanumeric, underscore, dash
-    if not re.match(r'^[\w-]{11}$', video_id):
-        print(f"  [VALIDATION] Invalid video ID chars: {video_id}")
-        return False
-    
-    # Check if it looks like a REAL YouTube video ID (character variety heuristic)
-    # Real YouTube IDs biasanya punya mix of upper, lower, digit, special chars
-    has_upper = any(c.isupper() for c in video_id)
-    has_lower = any(c.islower() for c in video_id)
-    has_digit = any(c.isdigit() for c in video_id)
-    has_special = any(c in '-_' for c in video_id)
-    
-    # Character variety score (0-4)
-    variety_score = sum([has_upper, has_lower, has_digit, has_special])
-    
-    # Real YouTube IDs biasanya punya minimal 2 kombinasi
-    # Tapi relax sedikit - 1 kombinasi juga OK (misal hanya lowercase + digit)
-    # Yang important adalah tidak SEMUA sama (all lowercase OR all uppercase)
-    if variety_score < 1:
-        print(f"  [VALIDATION] Suspicious ID (no variety): {video_id}")
-        return False
-    
-    # Warn jika hanya 1 variety tapi still allow
-    if variety_score == 1:
-        print(f"  [VALIDATION] ⚠️ Low variety ID (still allowing): {video_id}")
-    else:
-        print(f"  [VALIDATION] ✓ Valid video ID: {video_id} (variety: {variety_score})") 
-    
-    return True
