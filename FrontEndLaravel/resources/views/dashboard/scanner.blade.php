@@ -182,9 +182,9 @@
                         Recycling Recommendation
                     </h4>
 
-                    <ul id="recommendations" class="mt-3 space-y-2 text-slate-700">
+                    <div id="recommendations" class="mt-3 text-slate-700">
                         <li>• Start a scan or upload an image first.</li>
-                    </ul>
+                    </div>
 
                 </div>
 
@@ -231,6 +231,10 @@ let currentPredictedClass = null;
 let currentRecommendations = [
     'Start a scan or upload an image first.'
 ];
+let currentYoutube = {  // Variable baru untuk YouTube dinamis
+    title: "Tutorial Pengelolaan Sampah",
+    url: "#"
+};
 
 const classLabels = {
     accu: 'Accu',
@@ -289,6 +293,64 @@ const youtubeVideos = {
     }
 };
 
+// CSS untuk recommendations
+const recommendationsStyle = `
+    .recommendations-container {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #334155;
+    }
+    .intro-text {
+        font-weight: 600;
+        color: #16a34a;
+        margin-bottom: 1rem;
+        font-size: 16px;
+    }
+    .recommendations-section,
+    .sdgs-section {
+        margin: 1.5rem 0;
+    }
+    .recommendations-section h4,
+    .sdgs-section h4 {
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 0.75rem;
+        font-size: 15px;
+    }
+    .recommendations-list,
+    .sdgs-list {
+        margin-left: 1.5rem;
+        list-style-type: decimal;
+    }
+    .recommendations-list li,
+    .sdgs-list li {
+        margin-bottom: 0.5rem;
+        padding-left: 0.25rem;
+    }
+    .closing-text {
+        margin-top: 1rem;
+        color: #64748b;
+        font-style: italic;
+    }
+    .warning-box {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #fef08a;
+        border-left: 4px solid #eab308;
+        border-radius: 0.375rem;
+    }
+    .warning-box p {
+        color: #b45309;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0;
+    }
+`;
+
+// Inject CSS
+const styleElement = document.createElement('style');
+styleElement.textContent = recommendationsStyle;
+document.head.appendChild(styleElement);
 
 function showPreview(imageSrc) {
     preview.src = imageSrc;
@@ -321,21 +383,26 @@ function updateYoutubeTutorial(category) {
     const youtubeLink =
         document.getElementById('youtubeLink');
 
-    if (youtubeVideos[category]) {
-
-        youtubeTitle.textContent =
-            youtubeVideos[category].title;
-
-        youtubeLink.href =
-            youtubeVideos[category].url;
-
+    // Gunakan YouTube data dari API
+    // Ini bisa dari Gemma attempt pertama, atau fallback hardcoded jika Gemma gagal
+    if (currentYoutube && currentYoutube.title && currentYoutube.url && currentYoutube.url !== '#') {
+        youtubeTitle.textContent = currentYoutube.title;
+        youtubeLink.href = currentYoutube.url;
+        youtubeLink.onclick = null;  // Clear onclick handler
         youtubeSection.classList.remove('hidden');
-
-    } else {
-
-        youtubeSection.classList.add('hidden');
-
+        return;
     }
+
+    // Jika API return URL '#' atau kosong (Gemma completely failed)
+    // Tampilkan pesan informatif daripada hide section
+    youtubeTitle.textContent = "Tutorial sedang dimuat...";
+    youtubeLink.textContent = "🎥 Tonton Tutorial di YouTube";
+    youtubeLink.href = "#";
+    youtubeLink.onclick = (e) => {
+        e.preventDefault();
+        alert("Maaf, tutorial untuk sampah jenis ini sedang dicari. Silakan coba lagi atau search manual di YouTube dengan kata kunci: 'daur ulang " + category + "'");
+    };
+    youtubeSection.classList.remove('hidden');
 }
 
 function updateResult(label, categoryKey, confidence, recommendationsText) {
@@ -349,9 +416,16 @@ function updateResult(label, categoryKey, confidence, recommendationsText) {
     confidenceValue.textContent = `${confidence}%`;
 
     currentRecommendations = recommendationsText;
-    recommendations.innerHTML = recommendationsText
-        .map(item => `<li>• ${item}</li>`)
-        .join('');
+    
+    // Jika recommendationsText adalah string HTML (dari API Gemma)
+    if (typeof recommendationsText === 'string') {
+        recommendations.innerHTML = recommendationsText;
+    } else if (Array.isArray(recommendationsText)) {
+        // Fallback untuk array (legacy)
+        recommendations.innerHTML = recommendationsText
+            .map(item => `<li>• ${item}</li>`)
+            .join('');
+    }
 
     updateYoutubeTutorial(categoryKey);
     saveScanBtn.classList.remove('hidden');
@@ -480,9 +554,16 @@ async function classifyImage(file) {
         const categoryKey = data.category || 'anorganik';
         const categoryLabel = categoryNames[categoryKey] || categoryNames.anorganik;
         const confidencePercent = Math.round((data.confidence || 0) * 10000) / 100;
-        const recommendationList = getRecommendations(categoryKey, data.predicted_class);
+        
+        // Gunakan recommendation dari API (dari Gemma), jika tidak ada fallback ke local
+        const recommendationsText = data.recommendation || getRecommendations(categoryKey, data.predicted_class);
+        
+        // Ambil YouTube link dari API (dari Gemma)
+        if (data.youtube) {
+            currentYoutube = data.youtube;
+        }
 
-        updateResult(classLabel, categoryKey, confidencePercent, recommendationList);
+        updateResult(classLabel, categoryKey, confidencePercent, recommendationsText);
         setStatus(`Prediksi selesai: ${classLabel} (${categoryLabel}).`);
         currentImageFile = file;
     } catch (error) {
