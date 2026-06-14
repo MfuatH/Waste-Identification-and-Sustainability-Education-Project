@@ -8,6 +8,7 @@ Persyaratan singkat:
 
 - Python 3.8+ untuk backend
 - PHP 8+ dan Composer untuk frontend
+- Wajib install tensorflow 2.15
 
 Cara menjalankan (lokal):
 
@@ -22,7 +23,7 @@ Cara menjalankan (lokal):
 
 - Jalankan server:
 
-  uvicorn main:app --reload --port 8000
+  uvicorn main:app --reload --port 8001
 
 2) Frontend (Laravel)
 
