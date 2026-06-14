@@ -504,7 +504,7 @@ YOUTUBE_FALLBACK = {
     "pakaian": {"title": "video tutorial pengolahan pakaian]", "url": "https://youtu.be/q-_sT1AdzPQ?si=mKvHrpL_ko47wp-S"},
     "sepatu": {"title": "video tutorial pengolahan sepatu]", "url": "https://youtu.be/kNflGgtJyLA?si=zJ4go1vvhRAenlP_"},
     "battery": {"title": "[video tutorial pengolahan battery]", "url": "https://youtu.be/8035JvuCKWw?si=dQ5FiNdIKPb5FKQC"},
-    "accu": {"title": "video tutorial pengolahan accu]", "url": "https://www.youtube.com/watch?v=7JWv-nkkggc"}
+    "accu": {"title": "video tutorial pengolahanaccu]", "url": "https://www.youtube.com/watch?v=7JWv-nkkggc"}
 }
 
 
