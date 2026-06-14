@@ -485,7 +485,20 @@ async function saveScan() {
 
     const category = currentCategoryKey || 'anorganik';
     const confidence = parseFloat(confidenceValue.textContent.replace('%', '')) || 0;
-    const recommendationText = currentRecommendations.join('\n');
+    
+    // Handle both string (HTML dari Gemma) dan array (legacy)
+    let recommendationText = '';
+    if (typeof currentRecommendations === 'string') {
+        // Extract text dari HTML, remove tags
+        const temp = document.createElement('div');
+        temp.innerHTML = currentRecommendations;
+        recommendationText = temp.textContent || temp.innerText || '';
+    } else if (Array.isArray(currentRecommendations)) {
+        // Array format
+        recommendationText = currentRecommendations.join('\n');
+    } else {
+        recommendationText = 'Rekomendasi pengelolahan sampah sesuai kategori.';
+    }
 
     const formData = new FormData();
     formData.append('image', currentImageFile);
